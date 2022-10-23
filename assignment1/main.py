@@ -16,8 +16,37 @@ class User:
 
 # Takes in two user objects and outputs a float denoting compatibility
 def compute_score(user1, user2):
-    # YOUR CODE HERE
-    return 0
+    # initialize score
+    score = 0
+
+    # gender preferences - will return 0 if not in either preference
+    if user2.gender in user1.preferences:
+        score += 0.1
+    if user1.gender in user2.preferences:
+        score += 0.1
+
+    # check corresponding responses
+    q_total_num = len(user1.responses)
+    q_index = 0
+    answer_match = 0
+    for answer in user2.responses:
+        if answer == user1.responses[q_index]:
+            answer_match += 1
+    
+    # add percentage of matching question answers - will be 1 if all match
+    question_weight = answer_match / q_total_num
+    score += question_weight
+
+    # extra weight if more than half of question answers match
+    # none of test data had more than 10 questions match rip
+    if answer_match > q_total_num * 0.5:
+        score = score * (1 + question_weight)
+
+    # scuffed normalizing - cap scores at 1
+    if score > 1:
+        score = 1
+
+    return score
 
 
 if __name__ == '__main__':
